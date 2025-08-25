@@ -20,35 +20,35 @@ It combines **Machine Learning (Random Forest)** for disease prediction with a *
 
 ## 📂 Project Structure
 📦 Health-Recommender-System
- -📜 app.py # Flask backend (ML model + API)
+ - 📜 app.py # Flask backend (ML model + API)
  - 📜 index.html # Frontend (user interface)
  - 📜 Training.csv # Training dataset (symptoms → disease)
  - 📜 Testing.csv # Testing dataset
  - 📜 medicines.csv # Auto-generated medicine recommendations
- -📜 predictions_log.csv # Stores user predictions
- -📜 README.md # Project documentation
+ - 📜 predictions_log.csv # Stores user predictions
+ - 📜 README.md # Project documentation
 
 🧠 Machine Learning Model
- -Algorithm: Random Forest Classifier
- -Input: Binary symptom indicators
- -Output: Predicted disease + confidence score
+ - Algorithm: Random Forest Classifier
+ - Input: Binary symptom indicators
+ - Output: Predicted disease + confidence score
 
 💊 Medicine Recommendation
--Each disease is mapped with:
+- Each disease is mapped with:
   1)General-purpose medicines (e.g., Paracetamol, Antihistamine).
   2)Self-care advice (e.g., hydration, rest, warm fluids).
--Stored in medicines.csv for easy customization.
+- Stored in medicines.csv for easy customization.
 
 📊 Results
--High accuracy achieved on Testing.csv.
+- High accuracy achieved on Testing.csv.
 
 🛠️ Technologies Used
--Python, Flask
--Scikit-learn, Pandas, NumPy
--HTML, CSS, JavaScript
+- Python, Flask
+- Scikit-learn, Pandas, NumPy
+- HTML, CSS, JavaScript
 
 📌 Future Improvements
--Add larger medical datasets
--Include doctor consultation option
--Build a mobile app version
--Use deep learning for improved accuracy
+- Add larger medical datasets
+- Include doctor consultation option
+- Build a mobile app version
+- Use deep learning for improved accuracy
