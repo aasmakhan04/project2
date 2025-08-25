@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personalized Health Recommendation System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --brand: #1565c0;
+      --brand-dark: #0d47a1;
+      --bg1: #c5f06aff;
+      --bg2: #662cc4ff;
+      --card: #fbdbdbff;
+      --positive: #e8f5e9;
+      --shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: #0f172a;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 24px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    h1 {
+      margin: 0 0 6px;
+      color: var(--brand);
+      font-size: 28px;
+      text-align: center;
+    }
+    .sub {
+      text-align: center;
+      margin: 0 0 24px;
+      color: #334155;
+    }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .btn {
+      background: var(--brand);
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .05s ease, background .2s ease;
+    }
+    .btn:hover { background: var(--brand-dark); }
+    .btn:active { transform: translateY(1px); }
+    .grid {
+      columns: 2 320px;
+      column-gap: 18px;
+      margin-bottom: 16px;
+      max-height: 55vh;
+      overflow: auto;
+      padding-right: 6px;
+    }
+    .symp {
+      break-inside: avoid;
+      display: block;
+      background: #f8fafc;
+      padding: 10px 12px;
+      margin: 0 0 10px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+    .symp input { margin-right: 8px; }
+    .card {
+      background: var(--positive);
+      border-left: 6px solid #22c55e;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 8px; }
+    .muted { color: #475569; font-size: 14px; }
+    .disclaimer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🩺 Personalized Health Recommendation System</h1>
+    <p class="sub">
+      Model Accuracy: <strong>{{ accuracy }}</strong>
+      <span class="badge">testing-based if available</span>
+    </p>
 
+    <div class="toolbar">
+      <button class="btn" onclick="predict()">Predict Disease</button>
+      <button class="btn" onclick="randomPredict()">Random Prediction</button>
+      <button class="btn" onclick="clearAll()">Clear Selection</button>
+    </div>
+
+    <div class="grid" id="symptoms">
+      {% for s in symptoms %}
+        <label class="symp">
+          <input type="checkbox" value="{{ s }}" />
+          {{ s }}
+        </label>
+      {% endfor %}
+    </div>
+
+    <div id="result"></div>
+
+    <p class="disclaimer">
+      ⚠️ This tool provides general wellness information and OTC-style guidance only.
+      It is <b>not</b> a substitute for professional medical advice, diagnosis, or treatment.
+      Seek urgent care for severe or worsening symptoms.
+    </p>
+  </div>
+
+  <script>
+    function selectedSymptoms() {
+      return Array.from(document.querySelectorAll('#symptoms input:checked')).map(cb => cb.value);
+    }
+    function clearAll() {
+      document.querySelectorAll('#symptoms input:checked').forEach(cb => cb.checked = false);
+      document.getElementById('result').innerHTML = '';
+    }
+    function renderResult(payload, title='Prediction') {
+      const { disease, recommendations, symptoms } = payload;
+      const lines = (recommendations || []).map(r => `<li>${r}</li>`).join('');
+      const list = lines ? `<ul>${lines}</ul>` : '<em>No recommendations available.</em>';
+      const symps = symptoms && symptoms.length ? `<p class="muted"><b>Symptoms:</b> ${symptoms.join(', ')}</p>` : '';
+      document.getElementById('result').innerHTML = `
+        <div class="card">
+          <h3>${title}</h3>
+          ${symps}
+          <p><b>Disease:</b> ${disease}</p>
+          <p><b>Recommended Care:</b></p>
+          ${list}
+        </div>
+      `;
+    }
+    async function predict() {
+      const symptoms = selectedSymptoms();
+      if (!symptoms.length) {
+        alert('Please select at least one symptom.');
+        return;
+      }
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ symptoms })
+      });
+      const data = await res.json();
+      renderResult(data, 'Your Prediction');
+    }
+    async function randomPredict() {
+      const res = await fetch('/random');
+      const data = await res.json();
+      renderResult(data, 'Random Case');
+    }
+  </script>
+</body>
+</html>
